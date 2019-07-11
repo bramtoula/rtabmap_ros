@@ -60,6 +60,7 @@ OdometryROS::OdometryROS(bool stereoParams, bool visParams, bool icpParams) :
 	odometry_(0),
 	warningThread_(0),
 	callbackCalled_(false),
+	estimateStereoTransformFromTF_(false),
 	frameId_("base_link"),
 	odomFrameId_("odom"),
 	groundTruthFrameId_(""),
@@ -120,6 +121,7 @@ void OdometryROS::onInit()
 	Transform initialPose = Transform::getIdentity();
 	std::string initialPoseStr;
 	std::string configPath;
+	pnh.param("estimate_stereo_transform_from_tf", estimateStereoTransformFromTF_, estimateStereoTransformFromTF_);
 	pnh.param("frame_id", frameId_, frameId_);
 	pnh.param("odom_frame_id", odomFrameId_, odomFrameId_);
 	pnh.param("publish_tf", publishTf_, publishTf_);
@@ -161,6 +163,7 @@ void OdometryROS::onInit()
 				"are the same frame (value=\"%s\"). \"guess_frame_id\" is disabled.", odomFrameId_.c_str());
 		guessFrameId_.clear();
 	}
+	NODELET_INFO("Odometry: estimate_stereo_transform_from_tf   = %s", estimateStereoTransformFromTF_? "true" : "false");
 	NODELET_INFO("Odometry: frame_id               = %s", frameId_.c_str());
 	NODELET_INFO("Odometry: odom_frame_id          = %s", odomFrameId_.c_str());
 	NODELET_INFO("Odometry: publish_tf             = %s", publishTf_?"true":"false");

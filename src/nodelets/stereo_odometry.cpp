@@ -197,7 +197,7 @@ private:
 				bool alreadyRectified = true;
 				Parameters::parse(parameters(), Parameters::kRtabmapImagesAlreadyRectified(), alreadyRectified);
 				rtabmap::Transform stereoTransform;
-				if(!alreadyRectified)
+				if (!alreadyRectified || this->estimateStereoTransformFromTF())
 				{
 					stereoTransform = getTransform(
 							cameraInfoRight->header.frame_id,
@@ -205,7 +205,7 @@ private:
 							cameraInfoLeft->header.stamp);
 					if(stereoTransform.isNull())
 					{
-						NODELET_ERROR("Parameter %s is false but we cannot get TF between the two cameras!", Parameters::kRtabmapImagesAlreadyRectified().c_str());
+						NODELET_ERROR("Parameter %s is false or estimate_stereo_transform_from_tf is true but we cannot get TF between the two cameras!", Parameters::kRtabmapImagesAlreadyRectified().c_str());
 						return;
 					}
 				}

@@ -44,11 +44,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <boost/thread.hpp>
 
-namespace rtabmap {
+namespace rtabmap
+{
 class Odometry;
 }
 
-namespace rtabmap_ros {
+namespace rtabmap_ros
+{
 
 class OdometryROS : public nodelet::Nodelet
 {
@@ -57,45 +59,47 @@ public:
 	OdometryROS(bool stereoParams, bool visParams, bool icpParams);
 	virtual ~OdometryROS();
 
-	void processData(const rtabmap::SensorData & data, const ros::Time & stamp);
+	void processData(const rtabmap::SensorData &data, const ros::Time &stamp);
 
-	bool reset(std_srvs::Empty::Request&, std_srvs::Empty::Response&);
-	bool resetToPose(rtabmap_ros::ResetPose::Request&, rtabmap_ros::ResetPose::Response&);
-	bool pause(std_srvs::Empty::Request&, std_srvs::Empty::Response&);
-	bool resume(std_srvs::Empty::Request&, std_srvs::Empty::Response&);
-	bool setLogDebug(std_srvs::Empty::Request&, std_srvs::Empty::Response&);
-	bool setLogInfo(std_srvs::Empty::Request&, std_srvs::Empty::Response&);
-	bool setLogWarn(std_srvs::Empty::Request&, std_srvs::Empty::Response&);
-	bool setLogError(std_srvs::Empty::Request&, std_srvs::Empty::Response&);
+	bool reset(std_srvs::Empty::Request &, std_srvs::Empty::Response &);
+	bool resetToPose(rtabmap_ros::ResetPose::Request &, rtabmap_ros::ResetPose::Response &);
+	bool pause(std_srvs::Empty::Request &, std_srvs::Empty::Response &);
+	bool resume(std_srvs::Empty::Request &, std_srvs::Empty::Response &);
+	bool setLogDebug(std_srvs::Empty::Request &, std_srvs::Empty::Response &);
+	bool setLogInfo(std_srvs::Empty::Request &, std_srvs::Empty::Response &);
+	bool setLogWarn(std_srvs::Empty::Request &, std_srvs::Empty::Response &);
+	bool setLogError(std_srvs::Empty::Request &, std_srvs::Empty::Response &);
 
-	const std::string & frameId() const {return frameId_;}
-	const std::string & odomFrameId() const {return odomFrameId_;}
-	const rtabmap::ParametersMap & parameters() const {return parameters_;}
-	bool isPaused() const {return paused_;}
-	rtabmap::Transform getTransform(const std::string & fromFrameId, const std::string & toFrameId, const ros::Time & stamp) const;
+	const bool &estimateStereoTransformFromTF() const { return estimateStereoTransformFromTF_; }
+	const std::string &frameId() const { return frameId_; }
+	const std::string &odomFrameId() const { return odomFrameId_; }
+	const rtabmap::ParametersMap &parameters() const { return parameters_; }
+	bool isPaused() const { return paused_; }
+	rtabmap::Transform getTransform(const std::string &fromFrameId, const std::string &toFrameId, const ros::Time &stamp) const;
 
 protected:
-	void startWarningThread(const std::string & subscribedTopicsMsg, bool approxSync);
-	void callbackCalled() {callbackCalled_ = true;}
+	void startWarningThread(const std::string &subscribedTopicsMsg, bool approxSync);
+	void callbackCalled() { callbackCalled_ = true; }
 
 	virtual void flushCallbacks() = 0;
-	tf::TransformListener & tfListener() {return tfListener_;}
+	tf::TransformListener &tfListener() { return tfListener_; }
 
 private:
-	void warningLoop(const std::string & subscribedTopicsMsg, bool approxSync);
+	void warningLoop(const std::string &subscribedTopicsMsg, bool approxSync);
 	virtual void onInit();
 	virtual void onOdomInit() = 0;
-	virtual void updateParameters(rtabmap::ParametersMap & parameters) {}
+	virtual void updateParameters(rtabmap::ParametersMap &parameters) {}
 
-	void callbackIMU(const sensor_msgs::ImuConstPtr& msg);
-	void reset(const rtabmap::Transform & pose = rtabmap::Transform::getIdentity());
+	void callbackIMU(const sensor_msgs::ImuConstPtr &msg);
+	void reset(const rtabmap::Transform &pose = rtabmap::Transform::getIdentity());
 
 private:
-	rtabmap::Odometry * odometry_;
-	boost::thread * warningThread_;
+	rtabmap::Odometry *odometry_;
+	boost::thread *warningThread_;
 	bool callbackCalled_;
 
 	// parameters
+	bool estimateStereoTransformFromTF_;
 	std::string frameId_;
 	std::string odomFrameId_;
 	std::string groundTruthFrameId_;
@@ -141,6 +145,6 @@ private:
 	bool waitIMUToinit_;
 };
 
-}
+} // namespace rtabmap_ros
 
 #endif
